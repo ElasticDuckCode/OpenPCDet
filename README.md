@@ -1,5 +1,3 @@
-<img src="docs/open_mmlab.png" align="right" width="30%">
-
 This code has been modified for 2021 ECE 285 Autonomous Driving course project.
 
 Team:
@@ -7,7 +5,8 @@ Team:
 - Haoyu Jia 
 - Wenran Tian
 - Jake Millhiser
-
+- 
+<img src="docs/open_mmlab.png" align="right" width="30%">
 # OpenPCDet
 
 `OpenPCDet` is a clear, simple, self-contained open source project for LiDAR-based 3D object detection. 
