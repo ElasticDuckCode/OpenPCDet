@@ -5,7 +5,7 @@ Team:
 - Haoyu Jia 
 - Wenran Tian
 - Jake Millhiser
-- 
+
 <img src="docs/open_mmlab.png" align="right" width="30%">
 # OpenPCDet
 
