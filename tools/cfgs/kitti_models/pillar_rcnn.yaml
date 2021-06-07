@@ -48,7 +48,7 @@ DATA_CONFIG:
               WORLD_SCALE_RANGE: [0.95, 1.05]
 
 MODEL:
-    NAME: PointPillar
+    NAME: PVRCNN
 
     VFE:
         NAME: PillarVFE
