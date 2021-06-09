@@ -31,10 +31,10 @@ class BaseBEVBackbone(nn.Module):
         self.deblocks = nn.ModuleList()
         for idx in range(num_levels):
             
-            if idx == 0:
-                print(f"c_in_list[0]: {c_in_list[0]}")
-                print(f"input_channels: {input_channels}")
-            time.sleep(2)
+            #if idx == 0:
+            #    print(f"c_in_list[0]: {c_in_list[0]}")
+            #    print(f"input_channels: {input_channels}")
+            #time.sleep(2)
 
 
             cur_layers = [
@@ -123,8 +123,8 @@ class BaseBEVBackbone(nn.Module):
                 ups.append(x)
 
         # Jake: let's print and sleep for 10 seconds to read the output
-        print(f"jakeLevelDict.keys(): {jakeLevelDict.keys()}")
-        time.sleep(2)
+        #print(f"jakeLevelDict.keys(): {jakeLevelDict.keys()}")
+        #time.sleep(2)
 
         # Jake: Now try and shoehorn sequential layers into dictionary to fool VoxelSetAbstraction
         data_dict.update({
