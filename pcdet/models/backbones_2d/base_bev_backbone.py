@@ -2,8 +2,6 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-# Jake: adding time for debugging
-import time
 
 class BaseBEVBackbone(nn.Module):
     def __init__(self, model_cfg, input_channels):
@@ -25,18 +23,11 @@ class BaseBEVBackbone(nn.Module):
         else:
             upsample_strides = num_upsample_filters = []
 
-        num_levels = len(layer_nums)                                                   # Jake: in base pillar_rcnn.yaml, layer_nums = [3,5,5] so there are 3 levels
+        num_levels = len(layer_nums)
         c_in_list = [input_channels, *num_filters[:-1]]
         self.blocks = nn.ModuleList()
         self.deblocks = nn.ModuleList()
         for idx in range(num_levels):
-            
-            #if idx == 0:
-            #    print(f"c_in_list[0]: {c_in_list[0]}")
-            #    print(f"input_channels: {input_channels}")
-            #time.sleep(2)
-
-
             cur_layers = [
                 nn.ZeroPad2d(1),
                 nn.Conv2d(
@@ -46,16 +37,14 @@ class BaseBEVBackbone(nn.Module):
                 nn.BatchNorm2d(num_filters[idx], eps=1e-3, momentum=0.01),
                 nn.ReLU()
             ]
-
-            for k in range(layer_nums[idx]):                                           # Jake: then we are appending the number of layers specified in the level
+            for k in range(layer_nums[idx]):
                 cur_layers.extend([
                     nn.Conv2d(num_filters[idx], num_filters[idx], kernel_size=3, padding=1, bias=False),
                     nn.BatchNorm2d(num_filters[idx], eps=1e-3, momentum=0.01),
                     nn.ReLU()
                 ])
             self.blocks.append(nn.Sequential(*cur_layers))
-
-            if len(upsample_strides) > 0:                                              # Jake: then add layers for upsample strides
+            if len(upsample_strides) > 0:
                 stride = upsample_strides[idx]
                 if stride >= 1:
                     self.deblocks.append(nn.Sequential(
@@ -100,40 +89,15 @@ class BaseBEVBackbone(nn.Module):
         ups = []
         ret_dict = {}
         x = spatial_features
-
-        jakeLevelDict = {}
         for i in range(len(self.blocks)):
-
-            # Jake: it looks like here is where the connections between the blocks are being made,
-            # so perhaps we should be giving each a name
             x = self.blocks[i](x)
-
-            jakeLevelDict[f"conv_layer_{i+1}"] = x
 
             stride = int(spatial_features.shape[2] / x.shape[2])
             ret_dict['spatial_features_%dx' % stride] = x
             if len(self.deblocks) > 0:
-                y = self.deblocks[i](x)
-
-                # Jake :Add this upsample stride layer also
-                jakeLevelDict[f"upstride_layer_{i+1}"] = x
-
-                ups.append(y)
+                ups.append(self.deblocks[i](x))
             else:
                 ups.append(x)
-
-        # Jake: let's print and sleep for 10 seconds to read the output
-        #print(f"jakeLevelDict.keys(): {jakeLevelDict.keys()}")
-        #time.sleep(2)
-
-        # Jake: Now try and shoehorn sequential layers into dictionary to fool VoxelSetAbstraction
-        data_dict.update({
-            'multi_scale_3d_features': jakeLevelDict
-        })
-
-        # Jake: check that the multi_scale_3d_features key exists now, and contains our names
-        #print(f"data_dict['multi_scale_3d_features'].keys(): {data_dict['multi_scale_3d_features'].keys()}")
-        #time.sleep(1)
 
         if len(ups) > 1:
             x = torch.cat(ups, dim=1)
