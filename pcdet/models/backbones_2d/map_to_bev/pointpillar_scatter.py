@@ -34,7 +34,6 @@ class PointPillarScatter(nn.Module):
         batch_spatial_features = torch.stack(batch_spatial_features, 0)
         batch_spatial_features = batch_spatial_features.view(batch_size, self.num_bev_features * self.nz, self.ny, self.nx)
         batch_dict['spatial_features'] = batch_spatial_features
-
-        # Jake: Added line to give optional spatial features stride that pvrcnn components expect
+        # add spatial stride of pillar features
         batch_dict['spatial_features_stride'] = 1
         return batch_dict
