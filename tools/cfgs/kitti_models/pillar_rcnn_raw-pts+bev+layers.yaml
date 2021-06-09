@@ -141,21 +141,21 @@ MODEL:
                 MLPS: [[16, 16], [16, 16]]
                 POOL_RADIUS: [0.4, 0.8]
                 NSAMPLE: [16, 16]
-            layer_1:
-                DOWNSAMPLE_FACTOR: 0
-                MLPS: [[], []]
-                POOL_RADIUS: [, ]
-                NSAMPLE: [, ]
-            layer_2:
-                DOWNSAMPLE_FACTOR: 0
-                MLPS: [[], []]
-                POOL_RADIUS: [, ]
-                NSAMPLE: [, ]
-            layer_3:
-                DOWNSAMPLE_FACTOR: 0
-                MLPS: [[], []]
-                POOL_RADIUS: [, ]
-                NSAMPLE: [, ]
+            upstride_layer_1:
+                DOWNSAMPLE_FACTOR: 2 # above, it's stide 2, but upstride 1
+                MLPS: [[64, 64], [64, 64]]
+                POOL_RADIUS: [0.4, 0.8]
+                NSAMPLE: [64, 32] # I could be wrong, input is 64, with overal downsample of 2 giving 32, could also be 128 due to conv layer in/out being 64->128
+            upstride_layer_2:
+                DOWNSAMPLE_FACTOR: 2 # relative to last layer, it's stride 2, upstride 2, so would stay the same
+                MLPS: [[64, 64], [64, 64]] 
+                POOL_RADIUS: [0.4, 0.8]
+                NSAMPLE: [32, 32] # again assuming relative to input, relative downsample still the same
+            upstride_layer_3:
+                DOWNSAMPLE_FACTOR: 0 # relative to original input, this is stride 2, upstride 4 returning back to original size
+                MLPS: [[64, 64], [64, 64]]
+                POOL_RADIUS: [0.4, 0.8]
+                NSAMPLE: [32, 64]
 
     POINT_HEAD:
         NAME: PointHeadSimple

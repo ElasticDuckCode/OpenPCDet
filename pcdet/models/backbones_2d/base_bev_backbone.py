@@ -30,6 +30,13 @@ class BaseBEVBackbone(nn.Module):
         self.blocks = nn.ModuleList()
         self.deblocks = nn.ModuleList()
         for idx in range(num_levels):
+            
+            if idx == 0:
+                print(f"c_in_list[0]: {c_in_list[0]}")
+                print(f"input_channels: {input_channels}")
+            time.sleep(2)
+
+
             cur_layers = [
                 nn.ZeroPad2d(1),
                 nn.Conv2d(
@@ -101,18 +108,23 @@ class BaseBEVBackbone(nn.Module):
             # so perhaps we should be giving each a name
             x = self.blocks[i](x)
 
-            jakeLevelDict[f"layer_{i+1}"] = x
+            jakeLevelDict[f"conv_layer_{i+1}"] = x
 
             stride = int(spatial_features.shape[2] / x.shape[2])
             ret_dict['spatial_features_%dx' % stride] = x
             if len(self.deblocks) > 0:
-                ups.append(self.deblocks[i](x))
+                y = self.deblocks[i](x)
+
+                # Jake :Add this upsample stride layer also
+                jakeLevelDict[f"upstride_layer_{i+1}"] = x
+
+                ups.append(y)
             else:
                 ups.append(x)
 
         # Jake: let's print and sleep for 10 seconds to read the output
-        #print(f"jakeLevelDict.keys(): {jakeLevelDict.keys()}")
-        #time.sleep(1)
+        print(f"jakeLevelDict.keys(): {jakeLevelDict.keys()}")
+        time.sleep(2)
 
         # Jake: Now try and shoehorn sequential layers into dictionary to fool VoxelSetAbstraction
         data_dict.update({
